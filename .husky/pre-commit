@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running pre-commit hooks..."
+echo "Checking for hardcoded secrets..."
+
+gitleaks protect --staged --no-banner
+
+if [ $? -ne 0 ]; then
+  echo "Hardcoded secrets detected! Commit aborted."
+  exit 1
+fi
+
+#echo "Running tests..."
+# dotnet test
