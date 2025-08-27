@@ -96,7 +96,10 @@ public static class Extensions
           .AddEntityFrameworkCoreInstrumentation(ef =>
           {
             // Useful in dev; disable in prod if too verbose
-            ef.SetDbStatementForText = true;
+            if (builder.Environment.IsDevelopment())
+            {
+              ef.SetDbStatementForText = true;
+            }
           })
           .AddNpgsql() // If you use Npgsql directly; harmless otherwise
       );
