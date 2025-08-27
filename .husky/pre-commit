@@ -11,5 +11,8 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-#echo "Running tests..."
-# dotnet test
+# echo "Running CSharpier..."
+# dotnet csharpier --check || exit 1
+
+# echo "Running tests..."
+# dotnet test || exit 1
