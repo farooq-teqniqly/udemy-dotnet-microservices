@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Npgsql;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -64,6 +65,7 @@ public static class Extensions
     {
       o.IncludeFormattedMessage = true;
       o.IncludeScopes = true;
+      o.AddConsoleExporter();
     });
 
     // 3) Metrics + Tracing (HTTP in/out, DB)
@@ -71,7 +73,10 @@ public static class Extensions
       .Services.AddOpenTelemetry()
       .ConfigureResource(r => r.AddService(builder.Environment.ApplicationName))
       .WithMetrics(m =>
-        m.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddRuntimeInstrumentation()
+        m.AddAspNetCoreInstrumentation()
+          .AddHttpClientInstrumentation()
+          .AddRuntimeInstrumentation()
+          .AddConsoleExporter()
       )
       .WithTracing(t =>
         t.AddAspNetCoreInstrumentation(o =>
@@ -102,6 +107,7 @@ public static class Extensions
             }
           })
           .AddNpgsql() // If you use Npgsql directly; harmless otherwise
+          .AddConsoleExporter()
       );
 
     // 4) Exporters (enabled when endpoint is present)
