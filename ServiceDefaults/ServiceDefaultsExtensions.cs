@@ -18,13 +18,17 @@ namespace ServiceDefaults
   // To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
   public static class ServiceDefaultsExtensions
   {
+    private const string AliveEndpoint = "/alive";
+    private const string HealthEndpoint = "/health";
+    private const string LiveTag = "live";
+
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder)
       where TBuilder : IHostApplicationBuilder
     {
       builder
         .Services.AddHealthChecks()
         // Add a default liveness check to ensure app is responsive
-        .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+        .AddCheck("self", () => HealthCheckResult.Healthy(), [LiveTag]);
 
       return builder;
     }
@@ -53,21 +57,29 @@ namespace ServiceDefaults
     public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder)
       where TBuilder : IHostApplicationBuilder
     {
+      var serviceName = builder.Environment.ApplicationName;
+
+      var serviceVersion = typeof(ServiceDefaultsExtensions).Assembly.GetName().Version?.ToString();
+
       builder.Logging.AddOpenTelemetry(logging =>
       {
         var isDev = builder.Environment.IsDevelopment();
         logging.IncludeFormattedMessage = isDev;
         logging.IncludeScopes = isDev;
+        logging.ParseStateValues = isDev;
+
+        logging.SetResourceBuilder(
+          ResourceBuilder
+            .CreateDefault()
+            .AddService(serviceName: serviceName, serviceVersion: serviceVersion)
+        );
       });
 
       builder
         .Services.AddOpenTelemetry()
         .ConfigureResource(r =>
         {
-          r.AddService(
-            serviceName: builder.Environment.ApplicationName,
-            serviceVersion: typeof(ServiceDefaultsExtensions).Assembly.GetName().Version?.ToString()
-          );
+          r.AddService(serviceName: serviceName, serviceVersion: serviceVersion);
         })
         .WithMetrics(metrics =>
         {
@@ -80,10 +92,19 @@ namespace ServiceDefaults
         {
           tracing
             .AddSource(builder.Environment.ApplicationName)
-            .AddAspNetCoreInstrumentation()
+            .AddAspNetCoreInstrumentation(o =>
+            {
+              o.RecordException = true;
+              o.Filter = ctx =>
+                ctx.Request.Path.ToString() is not (AliveEndpoint or HealthEndpoint);
+            })
             // Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
             //.AddGrpcClientInstrumentation()
-            .AddHttpClientInstrumentation();
+            .AddHttpClientInstrumentation(o =>
+            {
+              o.FilterHttpRequestMessage = req =>
+                req?.RequestUri?.AbsolutePath is not (AliveEndpoint or HealthEndpoint);
+            });
         });
 
       builder.AddOpenTelemetryExporters();
@@ -104,13 +125,18 @@ namespace ServiceDefaults
       }
 
       // All health checks must pass for app to be considered ready to accept traffic after starting
-      app.MapHealthChecks("/health");
+      app.MapHealthChecks(HealthEndpoint).DisableHttpMetrics();
 
       // Only health checks tagged with the "live" tag must pass for app to be considered alive
       app.MapHealthChecks(
-        "/alive",
-        new HealthCheckOptions { Predicate = r => r.Tags.Contains("live") }
-      );
+          AliveEndpoint,
+          new HealthCheckOptions
+          {
+            Predicate = r => r.Tags.Contains(LiveTag),
+            AllowCachingResponses = false,
+          }
+        )
+        .DisableHttpMetrics();
 
       return app;
     }
