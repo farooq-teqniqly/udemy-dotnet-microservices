@@ -102,6 +102,7 @@ namespace ServiceDefaults
             //.AddGrpcClientInstrumentation()
             .AddHttpClientInstrumentation(o =>
             {
+              o.RecordException = true;
               o.FilterHttpRequestMessage = req =>
                 req?.RequestUri?.AbsolutePath is not (AliveEndpoint or HealthEndpoint);
             });
@@ -125,7 +126,8 @@ namespace ServiceDefaults
       }
 
       // All health checks must pass for app to be considered ready to accept traffic after starting
-      app.MapHealthChecks(HealthEndpoint).DisableHttpMetrics();
+      app.MapHealthChecks(HealthEndpoint, new HealthCheckOptions { AllowCachingResponses = false })
+        .DisableHttpMetrics();
 
       // Only health checks tagged with the "live" tag must pass for app to be considered alive
       app.MapHealthChecks(
@@ -147,6 +149,16 @@ namespace ServiceDefaults
       var useOtlpExporter = !string.IsNullOrWhiteSpace(
         builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
       );
+
+      if (builder.Environment.IsDevelopment())
+      {
+        builder
+          .Services.AddOpenTelemetry()
+          .WithTracing(t => t.AddConsoleExporter())
+          .WithMetrics(m => m.AddConsoleExporter());
+
+        builder.Services.Configure<OpenTelemetryLoggerOptions>(o => o.AddConsoleExporter());
+      }
 
       if (!useOtlpExporter)
       {
