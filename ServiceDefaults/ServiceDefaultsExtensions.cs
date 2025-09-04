@@ -16,7 +16,7 @@ namespace ServiceDefaults
   // Adds common .NET Aspire services: service discovery, resilience, health checks, and OpenTelemetry.
   // This project should be referenced by each service project in your solution.
   // To learn more about using this project, see https://aka.ms/dotnet/aspire/service-defaults
-  public static class Extensions
+  public static class ServiceDefaultsExtensions
   {
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder)
       where TBuilder : IHostApplicationBuilder
@@ -66,7 +66,7 @@ namespace ServiceDefaults
         {
           r.AddService(
             serviceName: builder.Environment.ApplicationName,
-            serviceVersion: typeof(Extensions).Assembly.GetName().Version?.ToString()
+            serviceVersion: typeof(ServiceDefaultsExtensions).Assembly.GetName().Version?.ToString()
           );
         })
         .WithMetrics(metrics =>
