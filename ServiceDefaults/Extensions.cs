@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
 namespace ServiceDefaults
@@ -52,12 +55,20 @@ namespace ServiceDefaults
     {
       builder.Logging.AddOpenTelemetry(logging =>
       {
-        logging.IncludeFormattedMessage = true;
-        logging.IncludeScopes = true;
+        var isDev = builder.Environment.IsDevelopment();
+        logging.IncludeFormattedMessage = isDev;
+        logging.IncludeScopes = isDev;
       });
 
       builder
         .Services.AddOpenTelemetry()
+        .ConfigureResource(r =>
+        {
+          r.AddService(
+            serviceName: builder.Environment.ApplicationName,
+            serviceVersion: typeof(Extensions).Assembly.GetName().Version?.ToString()
+          );
+        })
         .WithMetrics(metrics =>
         {
           metrics
@@ -84,9 +95,10 @@ namespace ServiceDefaults
     {
       ArgumentNullException.ThrowIfNull(app);
 
-      // Adding health checks endpoints to applications in non-development environments has security implications.
-      // See https://aka.ms/dotnet/aspire/healthchecks for details before enabling these endpoints in non-development environments.
-      if (!app.Environment.IsDevelopment())
+      var cfg = app.Services.GetRequiredService<IConfiguration>();
+      var exposeInNonDev = cfg.GetValue<bool>("HealthChecks:ExposeEndpoints");
+
+      if (!app.Environment.IsDevelopment() && !exposeInNonDev)
       {
         return app;
       }
@@ -110,10 +122,16 @@ namespace ServiceDefaults
         builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
       );
 
-      if (useOtlpExporter)
+      if (!useOtlpExporter)
       {
-        builder.Services.AddOpenTelemetry().UseOtlpExporter();
+        return builder;
       }
+
+      // Traces & metrics
+      builder.Services.AddOpenTelemetry().UseOtlpExporter();
+
+      // Logs
+      builder.Services.Configure<OpenTelemetryLoggerOptions>(o => o.AddOtlpExporter());
 
       return builder;
     }
