@@ -61,9 +61,11 @@ namespace ServiceDefaults
       var serviceName = builder.Environment.ApplicationName;
 
       var serviceVersion =
-        Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
-        ?? builder.Configuration["OTEL_SERVICE_VERSION"];
-
+        builder.Configuration["OTEL_SERVICE_VERSION"]
+        ?? Assembly.GetEntryAssembly()
+             ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+             ?.InformationalVersion
+        ?? Assembly.GetEntryAssembly()?.GetName().Version?.ToString();
       builder.Logging.AddOpenTelemetry(logging =>
       {
         var isDev = builder.Environment.IsDevelopment();
