@@ -59,13 +59,14 @@ namespace ServiceDefaults
       where TBuilder : IHostApplicationBuilder
     {
       var serviceName = builder.Environment.ApplicationName;
+      var entryAssembly = Assembly.GetEntryAssembly();
 
       var serviceVersion =
         builder.Configuration["OTEL_SERVICE_VERSION"]
-        ?? Assembly.GetEntryAssembly()
-             ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-             ?.InformationalVersion
-        ?? Assembly.GetEntryAssembly()?.GetName().Version?.ToString();
+        ?? entryAssembly
+          ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+          ?.InformationalVersion
+        ?? entryAssembly?.GetName().Version?.ToString();
       builder.Logging.AddOpenTelemetry(logging =>
       {
         var isDev = builder.Environment.IsDevelopment();
@@ -157,11 +158,7 @@ namespace ServiceDefaults
 
       if (builder.Environment.IsDevelopment())
       {
-        builder
-          .Services.AddOpenTelemetry()
-          .WithTracing(t => t.AddConsoleExporter())
-          .WithMetrics(m => m.AddConsoleExporter());
-
+        builder.Services.AddOpenTelemetry().WithTracing(t => t.AddConsoleExporter());
         builder.Services.Configure<OpenTelemetryLoggerOptions>(o => o.AddConsoleExporter());
       }
 
@@ -170,11 +167,8 @@ namespace ServiceDefaults
         return builder;
       }
 
-      // Traces & metrics
+      // Traces, metrics & logs
       builder.Services.AddOpenTelemetry().UseOtlpExporter();
-
-      // Logs
-      builder.Services.Configure<OpenTelemetryLoggerOptions>(o => o.AddOtlpExporter());
 
       return builder;
     }
