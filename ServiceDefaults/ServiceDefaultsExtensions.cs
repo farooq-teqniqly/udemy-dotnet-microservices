@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
@@ -59,7 +60,9 @@ namespace ServiceDefaults
     {
       var serviceName = builder.Environment.ApplicationName;
 
-      var serviceVersion = typeof(ServiceDefaultsExtensions).Assembly.GetName().Version?.ToString();
+      var serviceVersion =
+        Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
+        ?? builder.Configuration["OTEL_SERVICE_VERSION"];
 
       builder.Logging.AddOpenTelemetry(logging =>
       {
@@ -91,7 +94,7 @@ namespace ServiceDefaults
         .WithTracing(tracing =>
         {
           tracing
-            .AddSource(builder.Environment.ApplicationName)
+            .AddSource(serviceName)
             .AddAspNetCoreInstrumentation(o =>
             {
               o.RecordException = true;
