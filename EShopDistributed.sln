@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		Directory.Build.props = Directory.Build.props
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{BEC2520C-4998-4F11-937A-EE36181DE8A6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{AAC83E77-E7EC-46F6-B66B-3071DC883FA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "AppHost\AppHost.csproj", "{DAEBF9A6-3806-4A40-9BBD-EFA4A838DE83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults", "ServiceDefaults\ServiceDefaults.csproj", "{7EBEBB26-0C70-49AF-93CE-1686A2047F5A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAEBF9A6-3806-4A40-9BBD-EFA4A838DE83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAEBF9A6-3806-4A40-9BBD-EFA4A838DE83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAEBF9A6-3806-4A40-9BBD-EFA4A838DE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAEBF9A6-3806-4A40-9BBD-EFA4A838DE83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EBEBB26-0C70-49AF-93CE-1686A2047F5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EBEBB26-0C70-49AF-93CE-1686A2047F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EBEBB26-0C70-49AF-93CE-1686A2047F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EBEBB26-0C70-49AF-93CE-1686A2047F5A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DAEBF9A6-3806-4A40-9BBD-EFA4A838DE83} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{7EBEBB26-0C70-49AF-93CE-1686A2047F5A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7FA5844-E8E3-4E56-8C7F-9EC67AE96317}
+	EndGlobalSection
+EndGlobal
