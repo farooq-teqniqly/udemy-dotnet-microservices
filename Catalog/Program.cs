@@ -39,6 +39,7 @@ internal static class Program
 
     if (!app.Environment.IsDevelopment())
     {
+      app.UseHsts();
       app.UseHttpsRedirection();
     }
 
