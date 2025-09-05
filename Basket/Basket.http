@@ -1,0 +1,56 @@
+@Basket_HostAddress = https://localhost:7160
+@username = farooq
+
+POST {{Basket_HostAddress}}/basket
+Content-Type: application/json
+Accept: application/json
+{
+  "username": "{{username}}",
+  "items": [
+    {
+      "price": 999.99,
+      "quantity": 1
+    },
+    {
+      "price": 49.99,
+      "quantity": 2
+    },
+    {
+      "price": 199.99,
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+GET {{Basket_HostAddress}}/basket/{{username}}
+Accept: application/json
+
+###
+
+PUT {{Basket_HostAddress}}/basket
+Content-Type: application/json
+Accept: application/json
+{
+  "username": "{{username}}",
+  "items": [
+    {
+      "price": 999.99,
+      "quantity": 2
+    },
+    {
+      "price": 49.99,
+      "quantity": 4
+    },
+    {
+      "price": 199.99,
+      "quantity": 2
+    }
+  ]
+}
+
+###
+
+DELETE {{Basket_HostAddress}}/basket/{{username}}
+Accept: application/json
