@@ -1,10 +1,11 @@
 @Basket_HostAddress = https://localhost:7160
-
+@username = farooq
 
 POST {{Basket_HostAddress}}/basket
 Content-Type: application/json
+Accept: application/json
 {
-  "username": "farooq",
+  "username": "{{username}}",
   "items": [
     {
       "price": 999.99,
@@ -23,15 +24,16 @@ Content-Type: application/json
 
 ###
 
-GET {{Basket_HostAddress}}/basket/farooq
+GET {{Basket_HostAddress}}/basket/{{username}}
 Accept: application/json
 
 ###
 
 PUT {{Basket_HostAddress}}/basket
 Content-Type: application/json
+Accept: application/json
 {
-  "username": "farooq",
+  "username": "{{username}}",
   "items": [
     {
       "price": 999.99,
@@ -50,6 +52,5 @@ Content-Type: application/json
 
 ###
 
-DELETE {{Basket_HostAddress}}/basket/farooq
+DELETE {{Basket_HostAddress}}/basket/{{username}}
 Accept: application/json
-
