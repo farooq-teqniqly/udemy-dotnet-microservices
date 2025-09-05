@@ -1,4 +1,6 @@
 using Catalog.Data;
+using Catalog.Endpoints;
+using Catalog.Services;
 using ServiceDefaults;
 
 namespace Catalog;
@@ -13,6 +15,7 @@ internal static class Program
     builder.AddServiceDefaults();
 
     builder.AddNpgsqlDbContext<ProductDbContext>(connectionName: "catalogdb");
+    builder.Services.AddScoped<ProductService>();
 
     builder.Services.AddAuthorization();
 
@@ -22,6 +25,8 @@ internal static class Program
     var app = builder.Build();
 
     app.MapDefaultEndpoints();
+
+    app.MapProductEndpoints();
 
     if (app.Environment.IsDevelopment())
     {
