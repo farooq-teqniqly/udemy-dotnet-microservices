@@ -10,7 +10,7 @@ namespace Basket.Services
 
     private static readonly DistributedCacheEntryOptions options = new()
     {
-      AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
+      SlidingExpiration = TimeSpan.FromHours(1),
     };
 
     private static string GetKey(string username) => $"basket:{username.ToUpperInvariant()}";
