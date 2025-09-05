@@ -35,11 +35,17 @@ namespace Basket.Services
     {
       ArgumentException.ThrowIfNullOrEmpty(username);
 
-      var basket = await _cache.GetStringAsync(GetKey(username), ct).ConfigureAwait(false);
-
-      return string.IsNullOrEmpty(basket)
-        ? null
-        : JsonSerializer.Deserialize<ShoppingBasket>(basket);
+      var json = await _cache.GetStringAsync(GetKey(username), ct).ConfigureAwait(false);
+      if (string.IsNullOrEmpty(json)) return null;
+      try
+      {
+        return JsonSerializer.Deserialize<ShoppingBasket>(json);
+      }
+      catch (JsonException)
+      {
+        await _cache.RemoveAsync(GetKey(username), ct).ConfigureAwait(false);
+        return null;
+      }
     }
 
     internal async Task UpdateBasketAsync(
