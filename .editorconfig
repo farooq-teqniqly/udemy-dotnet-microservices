@@ -38,3 +38,7 @@ dotnet_diagnostic.S2139.severity = none
 [Catalog/Services/ProductService.cs]
 # CA1812: Avoid uninstantiated internal classes
 dotnet_diagnostic.CA1812.severity = none
+
+[Basket/Services/ShoppingBasketService.cs]
+# CA1812: Avoid uninstantiated internal classes
+dotnet_diagnostic.CA1812.severity = none
