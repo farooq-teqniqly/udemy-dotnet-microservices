@@ -54,15 +54,15 @@ namespace Basket.Services
     )
     {
       ArgumentNullException.ThrowIfNull(shoppingBasket);
+      ArgumentException.ThrowIfNullOrEmpty(shoppingBasket.Username);
 
-      await _cache
-        .SetStringAsync(
-          GetKey(shoppingBasket.Username),
-          JsonSerializer.Serialize(shoppingBasket),
-          options,
-          ct
-        )
-        .ConfigureAwait(false);
+      var key = GetKey(shoppingBasket.Username);
+      await _cache.SetStringAsync(
+        key,
+        JsonSerializer.Serialize(shoppingBasket),
+        options,
+        ct
+      ).ConfigureAwait(false);
     }
   }
 }
