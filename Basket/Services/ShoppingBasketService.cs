@@ -13,7 +13,7 @@ namespace Basket.Services
       SlidingExpiration = TimeSpan.FromHours(1),
     };
 
-    private static string GetKey(string username) => $"basket:{username.ToUpperInvariant()}";
+    private static string GetKey(string username) => $"basket:{username.Trim().ToUpperInvariant()}";
 
     public ShoppingBasketService(IDistributedCache cache)
     {
