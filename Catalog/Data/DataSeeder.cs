@@ -109,5 +109,6 @@ internal static class DataSeeder
     }
 
     await dbContext.AddRangeAsync(Products, ct).ConfigureAwait(false);
+    await dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
   }
 }
