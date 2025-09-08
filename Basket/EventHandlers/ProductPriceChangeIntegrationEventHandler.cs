@@ -17,7 +17,7 @@ namespace Basket.EventHandlers
 
     public async Task Consume(ConsumeContext<ProductPriceChangeIntegrationEvent> context)
     {
-      ArgumentNullException.ThrowIfNull(context);
+      // context is non-null in MassTransit; optionally guard message fields instead.
 
       await _service
         .UpdateBasketItemPrices(

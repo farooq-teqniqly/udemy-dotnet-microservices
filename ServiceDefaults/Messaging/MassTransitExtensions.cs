@@ -29,8 +29,9 @@ namespace ServiceDefaults.Messaging
           {
             var configuration = context.GetRequiredService<IConfiguration>();
             var connectionString = configuration.GetConnectionString("rabbitmq");
-
-            rabbitConfig.Host(connectionString);
+            if (string.IsNullOrWhiteSpace(connectionString))
+              throw new InvalidOperationException("Missing connection string: 'rabbitmq'.");
+            rabbitConfig.Host(new Uri(connectionString, UriKind.Absolute));
             rabbitConfig.ConfigureEndpoints(context);
           }
         );
