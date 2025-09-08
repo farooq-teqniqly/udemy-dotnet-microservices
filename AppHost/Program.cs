@@ -17,8 +17,16 @@ if (builder.ExecutionContext.IsRunMode)
 var catalogDb = postgres.AddDatabase("catalogdb");
 
 // Projects
-builder.AddProject<Projects.Catalog>("catalog").WithReference(catalogDb).WaitFor(catalogDb);
+var catalog = builder
+  .AddProject<Projects.Catalog>("catalog")
+  .WithReference(catalogDb)
+  .WaitFor(catalogDb);
 
-builder.AddProject<Projects.Basket>("basket").WithReference(cache).WaitFor(cache);
+builder
+  .AddProject<Projects.Basket>("basket")
+  .WithReference(cache)
+  .WithReference(catalog)
+  .WaitFor(cache)
+  .WaitFor(catalog);
 
 await builder.Build().RunAsync().ConfigureAwait(false);

@@ -1,3 +1,4 @@
+using Basket.ApiClients;
 using Basket.Endpoints;
 using Basket.Services;
 using ServiceDefaults;
@@ -15,6 +16,11 @@ internal static class Program
 
     builder.AddRedisDistributedCache(connectionName: "cache");
     builder.Services.AddScoped<ShoppingBasketService>();
+
+    builder.Services.AddHttpClient<CatalogApiClient>(client =>
+    {
+      client.BaseAddress = new("https+http://catalog");
+    });
 
     builder.Services.AddAuthorization();
 
