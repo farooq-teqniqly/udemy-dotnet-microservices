@@ -67,6 +67,7 @@ namespace ServiceDefaults
           ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
           ?.InformationalVersion
         ?? entryAssembly?.GetName().Version?.ToString();
+
       builder.Logging.AddOpenTelemetry(logging =>
       {
         var isDev = builder.Environment.IsDevelopment();
@@ -111,7 +112,8 @@ namespace ServiceDefaults
               o.RecordException = true;
               o.FilterHttpRequestMessage = req =>
                 req?.RequestUri?.AbsolutePath is not (AliveEndpoint or HealthEndpoint);
-            });
+            })
+            .AddSource("MassTransit");
         });
 
       builder.AddOpenTelemetryExporters();

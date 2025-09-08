@@ -1,6 +1,8 @@
+using System.Reflection;
 using Basket.Endpoints;
 using Basket.Services;
 using ServiceDefaults;
+using ServiceDefaults.Messaging;
 
 namespace Basket;
 
@@ -15,6 +17,7 @@ internal static class Program
 
     builder.AddRedisDistributedCache(connectionName: "cache");
     builder.Services.AddScoped<ShoppingBasketService>();
+    builder.Services.AddMassTransitWithAssemblies(Assembly.GetExecutingAssembly());
 
     builder.Services.AddAuthorization();
 

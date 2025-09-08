@@ -1,7 +1,9 @@
+using System.Reflection;
 using Catalog.Data;
 using Catalog.Endpoints;
 using Catalog.Services;
 using ServiceDefaults;
+using ServiceDefaults.Messaging;
 
 namespace Catalog;
 
@@ -16,6 +18,7 @@ internal static class Program
 
     builder.AddNpgsqlDbContext<ProductDbContext>(connectionName: "catalogdb");
     builder.Services.AddScoped<ProductService>();
+    builder.Services.AddMassTransitWithAssemblies(Assembly.GetExecutingAssembly());
 
     builder.Services.AddAuthorization();
 

@@ -9,6 +9,10 @@ internal sealed class ShoppingBasketItem
   public decimal Price { get; set; }
 
   [Required]
+  [Range(typeof(int), "1", "1_000_000")]
+  public int ProductId { get; set; }
+
+  [Required]
   [Range(typeof(int), "0", "1000")]
   public int Quantity { get; set; }
 }

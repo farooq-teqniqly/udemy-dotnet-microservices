@@ -1,16 +1,23 @@
-﻿using Catalog.Data;
+using Catalog.Data;
 using Catalog.Models;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using ServiceDefaults.Messaging.Events;
 
 namespace Catalog.Services
 {
   internal sealed class ProductService
   {
+    private readonly IBus _bus;
     private readonly ProductDbContext _dbContext;
 
-    public ProductService(ProductDbContext dbContext)
+    public ProductService(ProductDbContext dbContext, IBus bus)
     {
+      ArgumentNullException.ThrowIfNull(dbContext);
+      ArgumentNullException.ThrowIfNull(bus);
+
       _dbContext = dbContext;
+      _bus = bus;
     }
 
     internal async Task CreateProductAsync(Product product, CancellationToken ct = default)
@@ -44,10 +51,23 @@ namespace Catalog.Services
       ArgumentNullException.ThrowIfNull(updatedProduct);
       ArgumentNullException.ThrowIfNull(inputProduct);
 
+      if (updatedProduct.Price != inputProduct.Price)
+      {
+        var @event = new ProductPriceChangeIntegrationEvent
+        {
+          ProductId = updatedProduct.Id,
+          Name = inputProduct.Name,
+          Description = inputProduct.Description,
+          Price = inputProduct.Price,
+          ImageFilename = inputProduct.ImageFilename,
+        };
+
+        await _bus.Publish(@event, ct).ConfigureAwait(false);
+      }
+
       updatedProduct.Name = inputProduct.Name;
       updatedProduct.Description = inputProduct.Description;
       updatedProduct.ImageFilename = inputProduct.ImageFilename;
-      updatedProduct.Price = inputProduct.Price;
 
       await _dbContext.SaveChangesAsync(ct).ConfigureAwait(false);
     }
