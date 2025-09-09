@@ -27,7 +27,8 @@ namespace Basket.Endpoints
         )
         .WithName("GetBasket")
         .Produces<ShoppingBasket>()
-        .Produces(StatusCodes.Status404NotFound);
+        .Produces(StatusCodes.Status404NotFound)
+        .RequireAuthorization();
 
       group
         .MapPost(
@@ -50,7 +51,8 @@ namespace Basket.Endpoints
         )
         .WithName("CreateBasket")
         .Produces<ShoppingBasket>(StatusCodes.Status201Created)
-        .ProducesValidationProblem();
+        .ProducesValidationProblem()
+        .RequireAuthorization();
 
       group
         .MapPut(
@@ -73,7 +75,8 @@ namespace Basket.Endpoints
         )
         .WithName("UpdateBasket")
         .Produces(StatusCodes.Status204NoContent)
-        .ProducesValidationProblem();
+        .ProducesValidationProblem()
+        .RequireAuthorization();
 
       group
         .MapDelete(
@@ -88,7 +91,8 @@ namespace Basket.Endpoints
           }
         )
         .WithName("DeleteBasket")
-        .Produces(StatusCodes.Status204NoContent);
+        .Produces(StatusCodes.Status204NoContent)
+        .RequireAuthorization();
     }
   }
 }

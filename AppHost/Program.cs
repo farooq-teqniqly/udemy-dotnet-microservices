@@ -17,12 +17,6 @@ if (builder.ExecutionContext.IsRunMode)
 {
   postgres.WithPgAdmin();
   cache.WithDataVolume().WithLifetime(ContainerLifetime.Persistent).WithRedisInsight();
-
-  if (builder.ExecutionContext.IsRunMode)
-  {
-    postgres.WithPgAdmin();
-    cache.WithDataVolume().WithLifetime(ContainerLifetime.Persistent).WithRedisInsight();
-  }
 }
 
 var catalogDb = postgres.AddDatabase("catalogdb");

@@ -16,6 +16,18 @@ internal static class Program
     builder.AddRedisDistributedCache(connectionName: "cache");
     builder.Services.AddScoped<ShoppingBasketService>();
 
+    builder
+      .Services.AddAuthentication()
+      .AddKeycloakJwtBearer(
+        serviceName: "keycloak",
+        realm: "eshop",
+        configureOptions: options =>
+        {
+          options.RequireHttpsMetadata = false;
+          options.Audience = "account";
+        }
+      );
+
     builder.Services.AddAuthorization();
 
     // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -34,11 +46,13 @@ internal static class Program
       app.UseHsts();
     }
 
-    app.UseHttpsRedirection();
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapDefaultEndpoints();
     app.MapShoppingBasketEndpoints();
+
+    app.UseHttpsRedirection();
 
     await app.RunAsync().ConfigureAwait(false);
   }

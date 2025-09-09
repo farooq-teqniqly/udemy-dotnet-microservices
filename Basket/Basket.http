@@ -1,10 +1,12 @@
 @Basket_HostAddress = https://localhost:7160
-@Keycloak_HostAddress = http://localhost:50787
+@Keycloak_HostAddress = http://localhost:51844
+@accessToken = abc1234...
 @username = farooq
 
 POST {{Basket_HostAddress}}/basket
 Content-Type: application/json
 Accept: application/json
+Authorization: Bearer {{accessToken}}
 {
   "username": "{{username}}",
   "items": [
@@ -27,12 +29,14 @@ Accept: application/json
 
 GET {{Basket_HostAddress}}/basket/{{username}}
 Accept: application/json
+Authorization: Bearer {{accessToken}}
 
 ###
 
 PUT {{Basket_HostAddress}}/basket
 Content-Type: application/json
 Accept: application/json
+Authorization: Bearer {{accessToken}}
 {
   "username": "{{username}}",
   "items": [
@@ -55,7 +59,10 @@ Accept: application/json
 
 DELETE {{Basket_HostAddress}}/basket/{{username}}
 Accept: application/json
+Authorization: Bearer {{accessToken}}
+
 ###
+
 POST {{Keycloak_HostAddress}}/realms/eshop/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
