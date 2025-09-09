@@ -8,13 +8,21 @@ var postgres = builder
 
 var cache = builder.AddRedis("cache");
 
-var keycloak = builder.AddKeycloak("keycloak");
+var keycloak = builder
+  .AddKeycloak("keycloak")
+  .WithDataVolume()
+  .WithLifetime(ContainerLifetime.Persistent);
 
 if (builder.ExecutionContext.IsRunMode)
 {
   postgres.WithPgAdmin();
   cache.WithDataVolume().WithLifetime(ContainerLifetime.Persistent).WithRedisInsight();
-  keycloak.WithDataVolume().WithLifetime(ContainerLifetime.Persistent);
+
+  if (builder.ExecutionContext.IsRunMode)
+  {
+    postgres.WithPgAdmin();
+    cache.WithDataVolume().WithLifetime(ContainerLifetime.Persistent).WithRedisInsight();
+  }
 }
 
 var catalogDb = postgres.AddDatabase("catalogdb");
