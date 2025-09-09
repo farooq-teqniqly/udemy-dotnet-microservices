@@ -8,10 +8,13 @@ var postgres = builder
 
 var cache = builder.AddRedis("cache");
 
+var keycloak = builder.AddKeycloak("keycloak");
+
 if (builder.ExecutionContext.IsRunMode)
 {
   postgres.WithPgAdmin();
   cache.WithDataVolume().WithLifetime(ContainerLifetime.Persistent).WithRedisInsight();
+  keycloak.WithDataVolume().WithLifetime(ContainerLifetime.Persistent);
 }
 
 var catalogDb = postgres.AddDatabase("catalogdb");
@@ -19,6 +22,11 @@ var catalogDb = postgres.AddDatabase("catalogdb");
 // Projects
 builder.AddProject<Projects.Catalog>("catalog").WithReference(catalogDb).WaitFor(catalogDb);
 
-builder.AddProject<Projects.Basket>("basket").WithReference(cache).WaitFor(cache);
+builder
+  .AddProject<Projects.Basket>("basket")
+  .WithReference(cache)
+  .WaitFor(cache)
+  .WithReference(keycloak)
+  .WaitFor(keycloak);
 
 await builder.Build().RunAsync().ConfigureAwait(false);
