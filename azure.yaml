@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: udemy-dotnet-microservices
+metadata:
+    template: azd-init@1.18.2
+services:
+    udemy-dotnet-microservices:
+        project: .
+        host: containerapp
+        language: dotnet
+resources:
+    udemy-dotnet-microservices:
+        type: host.containerapp
+        port: 8080
