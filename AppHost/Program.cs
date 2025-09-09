@@ -1,22 +1,19 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Backing services
-var postgres = builder
-  .AddPostgres("postgres")
-  .WithDataVolume()
-  .WithLifetime(ContainerLifetime.Persistent);
+var postgres = builder.AddPostgres("postgres").WithLifetime(ContainerLifetime.Persistent);
 
 var cache = builder.AddRedis("cache");
 
-var keycloak = builder
-  .AddKeycloak("keycloak")
-  .WithDataVolume()
-  .WithLifetime(ContainerLifetime.Persistent);
+var keycloak = builder.AddKeycloak("keycloak").WithLifetime(ContainerLifetime.Persistent);
 
 if (builder.ExecutionContext.IsRunMode)
 {
-  postgres.WithPgAdmin();
+  // Postgres volumes and volumes in general, do not work with Azure Container Apps (ACA).
+  // See https://github.com/dotnet/aspire/issues/6671
+  postgres.WithDataVolume().WithPgAdmin();
   cache.WithDataVolume().WithLifetime(ContainerLifetime.Persistent).WithRedisInsight();
+  keycloak.WithDataVolume();
 }
 
 var catalogDb = postgres.AddDatabase("catalogdb");
